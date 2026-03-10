@@ -1,5 +1,9 @@
 # RAG
+
+## Overview
 A basic locally-running RAG setup using Ollama and LangChain. Requires a plain text context file (.txt, .md, ...) which is embedded and stored in a local ChromaDB for retrieval.
+
+Example context (canterbury.txt) is the first couple of stanzas of the Canterbury tales by Chaucer.
 
 ## Setup
 Install requirements, then pull your LM and embedding model of choice. Here I use [nomic-embed-text](https://ollama.com/library/nomic-embed-text) and [qwen3:8b](https://ollama.com/library/qwen3:8b):
