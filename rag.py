@@ -13,8 +13,8 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-model_name = "qwen3:8b"
 
+model_name = "qwen3:14b"
 
 # --- LOAD CONTEXT FILE ---
 with open("canterbury.txt", "r") as f:
@@ -49,7 +49,7 @@ embeddings = OllamaEmbeddings(model="nomic-embed-text")
 vectorstore = Chroma.from_documents(
     documents=chunks,
     embedding=embeddings,
-    persist_directory=persist_directory,  # saves to disk
+    persist_directory=persist_directory,  # save to disk
 )
 
 # --- SET UP RETRIEVER ---
@@ -63,7 +63,7 @@ llm = OllamaLLM(model=model_name)
 prompt = ChatPromptTemplate.from_template(
     """
     Answer the question using only the context below.
-    The context is the opening two stanzas of the Canterbury Tales by Chaucer.
+    The context is the General Prologue of the Canterbury Tales by Chaucer.
     If the answer isn't in the context, say "I don't know".
 
     Context:
@@ -87,7 +87,11 @@ chain = (
 
 # --- QUERY ---
 
-query = "How many pilgrims are there in the story?"
+# PASSING
+# query = "How many pilgrims are there in the story?"
+
+# FAILING
+query = "In what time of year does the story start?"
 
 logging.info(50*"-")
 logging.info(f'Question: {query}')
