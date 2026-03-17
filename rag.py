@@ -24,8 +24,8 @@ with open("canterbury.txt", "r") as f:
 
 # Recursive splitter (general-purpose)
 splitter = RecursiveCharacterTextSplitter(
-    chunk_size=200,       # characters per chunk
-    chunk_overlap=80,     # overlap between chunks to avoid losing context at boundaries
+    chunk_size=800,       # characters per chunk
+    chunk_overlap=200,     # overlap between chunks to avoid losing context at boundaries
 )
 chunks = splitter.create_documents([raw_text])
 
@@ -54,7 +54,7 @@ vectorstore = Chroma.from_documents(
 
 # --- SET UP RETRIEVER ---
 retriever = vectorstore.as_retriever(
-    search_kwargs={"k": 3}  # fetch top 3 most relevant chunks
+    search_kwargs={"k": 10}  # fetch top N most relevant chunks
 )
 
 # --- SET UP LLM & PROMPT ---
@@ -62,7 +62,8 @@ llm = OllamaLLM(model=model_name)
 
 prompt = ChatPromptTemplate.from_template(
     """
-    Answer the question using only the context below.
+    Answer the question using only the context below by carefully reviewing all provided context chunks.
+    If information spans multiple chunks, synthesize them into a complete answer.
     The context is the General Prologue of the Canterbury Tales by Chaucer.
     If the answer isn't in the context, say "I don't know".
 
@@ -95,10 +96,8 @@ chain = (
 
 # FAILING
 # query = "In which battles has the Knight fought?"
-# query = "List all of the characters described in the order they appear."
+query = "List all of the characters described in the order they appear."
 # query = "What is the Monk wearing?"
-
-query = ""
 
 
 logging.info(50*"-")
