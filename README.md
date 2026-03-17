@@ -3,17 +3,20 @@
 ## Overview
 A basic locally-running RAG setup using Ollama and LangChain. Requires a plain text context file (.txt, .md, ...) which is embedded and stored in a local ChromaDB for retrieval.
 
-Example context (canterbury.txt) is the first couple of stanzas of the Canterbury tales by Chaucer.
+Example context file (canterbury.txt) is the General Prologue of the Canterbury tales by Chaucer (roughly 8500 tokens).
 
 ## Setup
-Install requirements, then pull your LM and embedding model of choice. Here I use [nomic-embed-text](https://ollama.com/library/nomic-embed-text) and [qwen3:8b](https://ollama.com/library/qwen3:8b):
+
+First, [install Ollama](https://ollama.com/download).
+
+Install requirements, then pull your LM and embedding model of choice. Here I use [qwen3-embedding:4b](https://ollama.com/library/qwen3-embedding:4b) and [qwen3.5:9b](https://ollama.com/library/qwen3.5:9b):
 
 ```
-ollama pull nomic-embed-text
-ollama pull qwen3:8b
+ollama pull qwen3-embedding:4b
+ollama pull qwen3.5:9b
 ```
 
 ## Execution
-Ensure `model_name` variable in the script matches the LM tag you just pulled. Then run script.
+Ensure `model_name` variable in the script matches the LM tag you just pulled. Supply a query then run script.
 
 Adjust the prompt and text splitting parameters to see the effect this has on the model's ability to answer context-based questions.

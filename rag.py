@@ -14,7 +14,7 @@ logging.basicConfig(
 )
 
 
-model_name = "qwen3:14b"
+model_name = "qwen3.5:9b"
 
 # --- LOAD CONTEXT FILE ---
 with open("canterbury.txt", "r") as f:
@@ -45,7 +45,7 @@ chunks = splitter.create_documents([raw_text])
 persist_directory = "./chroma_db"
 
 logging.info("Creating ChromaDB...")
-embeddings = OllamaEmbeddings(model="nomic-embed-text")
+embeddings = OllamaEmbeddings(model="qwen3-embedding:4b")
 vectorstore = Chroma.from_documents(
     documents=chunks,
     embedding=embeddings,
@@ -89,9 +89,17 @@ chain = (
 
 # PASSING
 # query = "How many pilgrims are there in the story?"
+# query = "In what time of year does the story start?"
+# query = "What is the pilgrims' destination?"
+# query = "What does the Merchant wear on his head?"
 
 # FAILING
-query = "In what time of year does the story start?"
+# query = "In which battles has the Knight fought?"
+# query = "List all of the characters described in the order they appear."
+# query = "What is the Monk wearing?"
+
+query = ""
+
 
 logging.info(50*"-")
 logging.info(f'Question: {query}')
