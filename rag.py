@@ -15,6 +15,7 @@ logging.basicConfig(
 
 
 model_name = "qwen3.5:9b"
+n_chunks = 10
 
 # --- LOAD CONTEXT FILE ---
 with open("canterbury.txt", "r") as f:
@@ -54,7 +55,7 @@ vectorstore = Chroma.from_documents(
 
 # --- SET UP RETRIEVER ---
 retriever = vectorstore.as_retriever(
-    search_kwargs={"k": 10}  # fetch top N most relevant chunks
+    search_kwargs={"k": n_chunks}  # fetch top n most relevant chunks
 )
 
 # --- SET UP LLM & PROMPT ---
@@ -93,11 +94,15 @@ chain = (
 # query = "In what time of year does the story start?"
 # query = "What is the pilgrims' destination?"
 # query = "What does the Merchant wear on his head?"
+# query = "List all of the characters described in the order they appear."
+# query = "In which battles and campaigns has the Knight fought? List their locations."
+
 
 # FAILING
-# query = "In which battles has the Knight fought?"
-query = "List all of the characters described in the order they appear."
-# query = "What is the Monk wearing?"
+# query = "What is the Monk wearing?" # Slightly vague description, this one is harder
+# query = "What rhyming structure is used in the text?"
+
+query = "Describe the Franklin's appearance."
 
 
 logging.info(50*"-")

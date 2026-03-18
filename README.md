@@ -16,6 +16,8 @@ ollama pull qwen3-embedding:4b
 ollama pull qwen3.5:9b
 ```
 
+> NOTE: The 9B parameter model runs comfortably on my GPU (12GB VRAM), but a rough rule of thumb for required RAM in GB is $\sim 2 * N_{params}$. Ollama auto-detects GPUs and will utilise them as far as possible when performing inference.
+
 ## Execution
 Ensure `model_name` variable in the script matches the LM tag you just pulled. Supply a query then run script.
 
