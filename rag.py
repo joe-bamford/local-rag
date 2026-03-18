@@ -5,8 +5,8 @@ from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 # from langchain_text_splitters import MarkdownHeaderTextSplitter
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.messages import HumanMessage, AIMessage
 
 logging.basicConfig(
     level=logging.INFO,
@@ -14,7 +14,7 @@ logging.basicConfig(
 )
 
 
-model_name = "qwen3.5:9b"
+model_name = "qwen3.5:4b"
 n_chunks = 10
 
 # --- LOAD CONTEXT FILE ---
@@ -71,6 +71,9 @@ prompt = ChatPromptTemplate.from_template(
     Context:
     {context}
 
+    Conversation history:
+    {history}
+
     Question:
     {question}
     """
@@ -80,37 +83,45 @@ prompt = ChatPromptTemplate.from_template(
 def format_docs(docs):
     return "\n\n".join(d.page_content for d in docs)
 
+def format_history(history):
+    if not history:
+        return "None"
+    lines = []
+    for msg in history:
+        role = "Human" if isinstance(msg, HumanMessage) else "Assistant"
+        lines.append(f"{role}: {msg.content}")
+    return "\n".join(lines)
+
 chain = (
-    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    {
+        "context": lambda x: format_docs(retriever.invoke(x["question"])),
+        "question": lambda x: x["question"],
+        "history": lambda x: format_history(x["history"]),
+    }
     | prompt
     | llm
     | StrOutputParser()
 )
 
-# --- QUERY ---
+# --- CONVERSATION LOOP ---
+chat_history = []
 
-# PASSING
-# query = "How many pilgrims are there in the story?"
-# query = "In what time of year does the story start?"
-# query = "What is the pilgrims' destination?"
-# query = "What does the Merchant wear on his head?"
-# query = "List all of the characters described in the order they appear."
-# query = "In which battles and campaigns has the Knight fought? List their locations."
-
-
-# FAILING
-# query = "What is the Monk wearing?" # Slightly vague description, this one is harder
-# query = "What rhyming structure is used in the text?"
-
-query = "Describe the Franklin's appearance."
-
-
-logging.info(50*"-")
-logging.info(f'Question: {query}')
+logging.info("RAG pipeline ready. Type 'exit' or 'quit' to end the session.")
 logging.info(50*"-")
 
-response = chain.invoke(query)
+while True:
+    query = input("\nYou: ").strip()
+    if not query:
+        continue
+    if query.lower() in ("exit", "quit", "q"):
+        break
 
-logging.info(50*"-")
-logging.info(f'Response: {response}')
-logging.info(50*"-")
+    logging.info(f'Question: {query}')
+
+    response = chain.invoke({"question": query, "history": chat_history})
+
+    print(f"\nAssistant: {response}")
+    logging.info(f'Response: {response}')
+
+    chat_history.append(HumanMessage(content=query))
+    chat_history.append(AIMessage(content=response))
